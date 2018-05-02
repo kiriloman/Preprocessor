@@ -1,0 +1,22 @@
+#lang racket
+(provide add-active-token def-active-token process-string)
+
+;;Hashtable with tokens and functions
+(define associations (make-hash))
+
+(define (get-token-function str)
+  (eq? str 1))
+
+(define (add-active-token str function)
+  (hash-set! associations str function)
+  (hash-ref associations str))
+
+(define (process-string str)
+  (printf "processstring"))
+
+(define (def-active-token token function)
+  (printf "defactivetoken"))
+
+
+(define (foo str)
+  (printf "s"))
