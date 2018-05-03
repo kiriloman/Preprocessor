@@ -36,9 +36,19 @@
   (hash-set! associations token 
              (lambda str body)))
 
+;;Tokens implementation
+
+;;Local Type Inference
+(def-active-token "var" (str)
+ (string-append (substring str (+ (string-contains str "new ") 4) (string-contains str "(")) (substring str 3)))
 
 
 
+
+;;String Interpolation
+
+
+;;Type Aliases
 
 
 
