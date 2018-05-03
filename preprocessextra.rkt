@@ -9,6 +9,7 @@
 (define (add-active-token str function)
   (hash-set! associations str function))
 
+;;process-string
 (define (process-string str)
   (if (equal? str "")
       ""
@@ -19,6 +20,7 @@
             str))
   )
 
+;;token-to-execute decides which token (if any) comes first in the string 
 (define (token-to-execute str)
   (let ([token null])
     (let ([position (string-length str)])
@@ -27,13 +29,25 @@
           (when (< (string-contains str key) position)
             (set! position (string-contains str key))
             (set! token key)))))
-    (display token)
     token))
 
-(define (def-active-token token list body)
-  "s")
+;;def-active-token macro
+(define-syntax-rule (def-active-token token str body)
+  (hash-set! associations token 
+             (lambda str body)))
+
+
+
+
+
+
+
 
 ;;Coisas irrelevantes neste momento
+
+(define (def-active-token0 token str . body) ;;Body can have any amount of 'arguments'
+  (hash-set! associations token 
+             (lambda str body)))
 
 (define (token-positions str)
   (let ([positions-list '()])
@@ -43,6 +57,14 @@
             (set! positions-list (append positions-list (list key (+ (string-contains str key) token-length)))))) ;;Append token and its pos+1
       )
     positions-list))
+
+
+(define (string-after-newline str)
+(or (for/or ((c (in-string str))
+(i (in-naturals)))
+(and (char=? c #\newline)
+(substring str (+ i 1))))
+""))
 
 (define (foo str)
   (if (not (equal? (string-length str) 0))
