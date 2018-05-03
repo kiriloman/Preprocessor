@@ -51,10 +51,30 @@
                     (substring str (+ (string-contains str "}") 1)))
     (substring str 1)))
 
-
-
-
 ;;Type Aliases
+;(def-active-token "alias" (str)
+;  (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))])
+;    (regexp-replace* (string-append "[^a-zA-Z0-9]" alias "[^a-zA-Z0-9]") (substring str (+ (string-contains str ";") 1)) (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))))
+;  )
+
+(def-active-token "alias" (str)
+  ((let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
+        [value (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
+    (while (not (string=? str (string-replace-substring str alias value)))
+           (set! str (string-replace-substring str alias value))))
+  str)
+  )
+
+(define (find-substring-position str substring)
+  (regexp-match-positions (string-append "[^a-zA-Z0-9]" substring "[^a-zA-Z0-9]") str)
+  )
+
+(define (string-replace-substring str substring newsubstring)
+  (let ([fromindex (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" substring "[^a-zA-Z0-9]") str))]
+        [toindex (cdar (regexp-match-positions (string-append "[^a-zA-Z0-9]" substring "[^a-zA-Z0-9]") str))])  
+    (string-append (substring str 0 fromindex) newsubstring (substring str toindex (string-length str))))
+  )
+
 
 
 
