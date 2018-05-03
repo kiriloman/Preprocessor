@@ -42,10 +42,16 @@
 (def-active-token "var" (str)
  (string-append (substring str (+ (string-contains str "new ") 4) (string-contains str "(")) (substring str 3)))
 
-
-
-
 ;;String Interpolation
+(def-active-token "#" (str)
+  (if (not (equal? (second (string->list str)) #\"))
+    (string-append "\" + ("
+                    (substring str (+ (string-contains str "{") 1) (string-contains str "}"))
+                    ") + \""
+                    (substring str (+ (string-contains str "}") 1)))
+    (substring str 1)))
+
+
 
 
 ;;Type Aliases
