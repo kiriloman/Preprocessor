@@ -52,30 +52,6 @@
     (substring str 1)))
 
 ;;Type Aliases
-;(def-active-token "alias" (str)
- ; (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))])
-  ;  (regexp-replace* (string-append "[^a-zA-Z0-9]" alias "[^a-zA-Z0-9]") (substring str (+ (string-contains str ";") 1)) (string-append "[^a-zA-Z0-9]" (substring str (+ (string-contains str "= ") 2) (string-contains str ";")) "[^a-zA-Z0-9]")))
-  ;)
-
-;(def-active-token "alias" (str)
- ; ((let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
-  ;      [value (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
-   ;  (set! str (substring str (+ (string-contains str ";") 1)))
-    ; (while (not (string=? str (string-replace-substring str alias value)))
-     ;       (set! str (string-replace-substring str alias value))))
- ; str)
-  ;)
-
-;(def-active-token "alias" (str)
- ; (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
-  ;      [value (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
-   ; (string-append 
-  ;)
-
-(define (find-substring-position str substring)
-  (regexp-match-positions (string-append "[^a-zA-Z0-9]" substring "[^a-zA-Z0-9]") str)
-  )
-
 (def-active-token "alias" (str)
   (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
         [type (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
@@ -90,35 +66,3 @@
         (string-append (string-append (substring str 0 (+ fromindex 1)) newsubstring)
                        (string-replace-substring (substring str (- toindex 1)) substr newsubstring)))
        str))
-
-
-
-
-
-;;Coisas irrelevantes neste momento
-
-(define (def-active-token0 token str . body) ;;Body can have any amount of 'arguments'
-  (hash-set! associations token 
-             (lambda str body)))
-
-(define (token-positions str)
-  (let ([positions-list '()])
-    (for ([(key value) associations]) ;;For each token and function do
-      (let ([token-length (string-length key)])  ;;token-length is the token's length
-        (when (string-contains str key) ;;If token exists in string
-            (set! positions-list (append positions-list (list key (+ (string-contains str key) token-length)))))) ;;Append token and its pos+1
-      )
-    positions-list))
-
-
-(define (string-after-newline str)
-(or (for/or ((c (in-string str))
-(i (in-naturals)))
-(and (char=? c #\newline)
-(substring str (+ i 1))))
-""))
-
-(define (foo str)
-  (if (not (equal? (string-length str) 0))
-      (substring str 1)
-      ""))
