@@ -51,38 +51,18 @@
                     (substring str (+ (string-contains str "}") 1)))
     (substring str 1)))
 
-
-
-
 ;;Type Aliases
+(def-active-token "alias" (str)
+  (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
+        [type (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
+    (set! str (substring str (+ (string-contains str ";") 1)))
+    (string-replace-substring str alias type))
+  )
 
-
-
-
-;;Coisas irrelevantes neste momento
-
-(define (def-active-token0 token str . body) ;;Body can have any amount of 'arguments'
-  (hash-set! associations token 
-             (lambda str body)))
-
-(define (token-positions str)
-  (let ([positions-list '()])
-    (for ([(key value) associations]) ;;For each token and function do
-      (let ([token-length (string-length key)])  ;;token-length is the token's length
-        (when (string-contains str key) ;;If token exists in string
-            (set! positions-list (append positions-list (list key (+ (string-contains str key) token-length)))))) ;;Append token and its pos+1
-      )
-    positions-list))
-
-
-(define (string-after-newline str)
-(or (for/or ((c (in-string str))
-(i (in-naturals)))
-(and (char=? c #\newline)
-(substring str (+ i 1))))
-""))
-
-(define (foo str)
-  (if (not (equal? (string-length str) 0))
-      (substring str 1)
-      ""))
+(define (string-replace-substring str substr newsubstring)
+   (if (not (equal? (regexp-match-positions (string-append "[^a-zA-Z0-9]" substr "[^a-zA-Z0-9]") str) #f))
+       (let ([fromindex (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" substr "[^a-zA-Z0-9]") str))]
+            [toindex (cdar (regexp-match-positions (string-append "[^a-zA-Z0-9]" substr "[^a-zA-Z0-9]") str))])
+        (string-append (string-append (substring str 0 (+ fromindex 1)) newsubstring)
+                       (string-replace-substring (substring str (- toindex 1)) substr newsubstring)))
+       str))
