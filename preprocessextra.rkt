@@ -22,13 +22,12 @@
 
 ;;token-to-execute decides which token (if any) comes first in the string 
 (define (token-to-execute str)
-  (let ([token null])
-    (let ([position (string-length str)])
-      (for ([(key value) associations]) ;;For each token and function do
-        (when (string-contains str key) ;;If token exists in string
-          (when (< (string-contains str key) position)
-            (set! position (string-contains str key))
-            (set! token key)))))
+  (let ([token null] [position (string-length str)])
+    (for ([(key value) associations]) ;;For each token and function do
+      (when (string-contains str key) ;;If token exists in string
+        (when (< (string-contains str key) position) ;;If token's position is lower than our lowest position
+          (set! position (string-contains str key))  ;;Define our lowest position as this token's position
+          (set! token key))))                        ;;Also, define token to execute as this token
     token))
 
 ;;def-active-token macro
@@ -74,3 +73,17 @@
 (define (implement-getter type var-name)
   (string-append "\npublic " type " get" (string-titlecase var-name) "() {\n\treturn " var-name ";\n}");
   )
+
+
+;;#include Token
+;;Given #include <file-name> writes the contenct of file-name and removes #include <file-name> line
+;;If #include "file-name", the file will be the one in source's directory
+;;If #include <file-name>, the file will be the one in #include directory
+;;For easier implementation, assume that "file-name" is the same as <file-name>
+;;So we search for file-name in source's directory
+(def-active-token "#include" (str)
+  (let ([file-name (substring str (+ (string-contains str "<") 1) (string-contains str ">"))])
+    (if (file-exists? (string-append (path->string (current-directory)) file-name))
+        (string-append (file->string (string-append (path->string (current-directory)) file-name))
+                       (substring str (+ (string-contains str ">") 1)))
+        "No such file in directory.")))
