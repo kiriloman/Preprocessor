@@ -76,11 +76,8 @@
 
 
 ;;#include Token
-;;Given #include <file-name> writes the contenct of file-name and removes #include <file-name> line
-;;If #include "file-name", the file will be the one in source's directory
-;;If #include <file-name>, the file will be the one in #include directory
-;;For easier implementation, assume that "file-name" is the same as <file-name>
-;;So we search for file-name in source's directory
+;;Given #include <file-name> writes the content of file-name and removes #include <file-name> line
+;;If #include <file-name>, the file will be the one in source's directory
 (def-active-token "#include" (str)
   (let ([file-name (substring str (+ (string-contains str "<") 1) (string-contains str ">"))])
     (if (file-exists? (string-append (path->string (current-directory)) file-name))
