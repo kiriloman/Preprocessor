@@ -48,9 +48,9 @@
 (def-active-token "$" (str)
   (let ([type (substring str 1 (string-contains str " "))]
         [var-name (string-trim-all (substring str (+ (string-contains str " ") 1)
-                             (if (string-contains str "=")
-                                 (min (string-contains str "=") (string-contains str ";"))
-                                 (string-contains str ";"))))])
+                                              (if (string-contains str "=")
+                                                  (min (string-contains str "=") (string-contains str ";"))
+                                                  (string-contains str ";"))))])
     (string-append (substring str 1) (implement-setter type var-name) (implement-getter type var-name)))
    )
 
