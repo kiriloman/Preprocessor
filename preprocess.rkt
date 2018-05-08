@@ -22,20 +22,19 @@
 
 ;;token-to-execute decides which token (if any) comes first in the string 
 (define (token-to-execute str)
-  (let ([token null])
-    (let ([position (string-length str)])
+  (let ([token null]
+        [position (string-length str)])
       (for ([(key value) associations]) ;;For each token and function do
-        ;(when (string-contains str key) ;;If token exists in string
-        (if (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)
-          ;(when (< (string-contains str key) position)
-          (when (< (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)) position)
-            ;(set! position (string-contains str key))
-            (set! position (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)))
-            (set! token key))
-          (when (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)
-            (when (equal? 0 (caar (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)))
-              (set! position 0)
-              (set! token key))))))
+        (when (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)
+            (if (= 0 (caar (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)))
+              (when 1
+                (set! position 0)
+               (set! token key))
+              (when (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)
+                (when (< (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)) position)
+                  (set! position (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)))
+                  (set! token key))))
+          ))
     token))
 
 ;;def-active-token macro
