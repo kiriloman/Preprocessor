@@ -22,19 +22,13 @@
 
 ;;token-to-execute decides which token (if any) comes first in the string 
 (define (token-to-execute str)
-  (let ([token null]
-        [position (string-length str)])
+  (let ([token null])
+    (let ([position (string-length str)])
       (for ([(key value) associations]) ;;For each token and function do
-        (when (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)
-            (if (= 0 (caar (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)))
-              (when 1
-                (set! position 0)
-               (set! token key))
-              (when (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)
-                (when (< (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)) position)
-                  (set! position (caar (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str)))
-                  (set! token key))))
-          ))
+        (when (string-contains str key) ;;If token exists in string
+          (when (< (string-contains str key) position)
+            (set! position (string-contains str key))
+            (set! token key)))))
     token))
 
 ;;def-active-token macro
@@ -59,8 +53,8 @@
 
 ;;Type Aliases
 (def-active-token "alias" (str)
-  (let ([alias (string-trim-all (substring str (+ (string-contains str "alias ") 6) (string-contains str "=")))]
-        [type (string-trim-all (substring str (+ (string-contains str "=") 1) (string-contains str ";")))])
+  (let ([alias (substring str (+ (string-contains str "alias ") 6) (string-contains str " ="))]
+        [type (substring str (+ (string-contains str "= ") 2) (string-contains str ";"))])
     (set! str (substring str (+ (string-contains str ";") 1)))
     (string-replace-substring str alias type))
   )
@@ -72,16 +66,3 @@
         (string-append (string-append (substring str 0 (+ fromindex 1)) newsubstring)
                        (string-replace-substring (substring str (- toindex 1)) substr newsubstring)))
        str))
-
-;;Helpers
-(define (string-trim-all-left str)
-  (if (or (equal? (string-contains str " ") 0) (equal? (string-contains str "\n") 0) (equal? (string-contains str "\t") 0)) ;se tem espaço no inicio
-      (string-append (string-trim-all-left (substring str 1)))
-      str)
-  )
-
-(define (string-trim-all str)
-  (list->string (reverse
-                 (string->list (string-trim-all-left (list->string (reverse
-                                                                    (string->list (string-trim-all-left str))))))))
-  )
