@@ -2,28 +2,25 @@
 (provide add-active-token def-active-token process-string)
 (require srfi/13)
 
-;Hashtable with tokens and functions
+;Hashtable with tokens and associated functions
 (define associations (make-hash))
 
 ;Adds a token with respective function to a hashmap for later use in process-string
 (define (add-active-token str function)
   (hash-set! associations str function))
 
-;Recursively applies first token found in a string appending the results together
-(define (process-string str)
-  (let ([token (token-to-execute str)])
-    (cond
-      [(empty? token) str]
-      [else (string-append (substring str 0 (string-contains str token))
-                           (process-string ((hash-ref associations token)
-                                            (substring str (string-contains str token)))))])))
+;def-active-token macro
+(define-syntax-rule (def-active-token token str body)
+  (hash-set! associations token 
+             (lambda str body)))
 
-;token-to-execute decides which token (if any) comes first in the string and returns its position in str
+;token-to-execute decides which token (if any) comes first in the given string and returns its position
+;returns an empty list if no token is present
 (define (token-to-execute str)
   (let ([token null]
         [position (string-length str)])
     (for ([(key value) associations])
-      (let ([key-position (regexp-match-positions (string-append key "[^0-9]") str)])
+      (let ([key-position (regexp-match-positions (string-append key "[^a-zA-Z0-9]") str)])
         (cond
           [(and key-position (equal? (caar key-position) 0))  (set! position 0) (set! token key)]
           [else (set! key-position (regexp-match-positions (string-append "[^a-zA-Z0-9]" key "[^a-zA-Z0-9]") str))
@@ -33,10 +30,14 @@
                         (set! token key))])])))
     token))
 
-;def-active-token macro
-(define-syntax-rule (def-active-token token str body)
-  (hash-set! associations token 
-             (lambda str body)))
+;Recursively applies first token found in a string appending the results together
+(define (process-string str)
+  (let ([token (token-to-execute str)])
+    (cond
+      [(empty? token) str]
+      [else (string-append (substring str 0 (string-contains str token))
+                           (process-string ((hash-ref associations token)
+                                            (substring str (string-contains str token)))))])))
 
 
 ;Extra Tokens implementation
