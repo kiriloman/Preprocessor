@@ -30,7 +30,7 @@
                 (cond
                   [(and key-position (< (caar key-position) position)
                         (set! position (caar key-position))
-                        (set! token key))])])));)
+                        (set! token key))])])))
     token))
 
 ;;def-active-token macro
