@@ -6,8 +6,8 @@
 (define associations (make-hash))
 
 ;Adds a token with respective function to a hashmap for later use in process-string
-(define (add-active-token str function)
-  (hash-set! associations str function))
+(define (add-active-token token function)
+  (hash-set! associations token function))
 
 ;def-active-token macro
 (define-syntax-rule (def-active-token token str body)
@@ -44,7 +44,8 @@
 
 ;Local Type Inference
 (def-active-token "var" (str)
-  (string-append (substring str (+ (string-contains str "new ") 4) (string-contains str "(")) (substring str 3)))
+  (string-append (substring str (+ (string-contains str "new ") 4) (string-contains str "("))
+                 (substring str 3)))
 
 ;String Interpolation
 (def-active-token "#" (str)
@@ -57,8 +58,10 @@
 
 ;Type Aliases
 (def-active-token "alias" (str)
-  (let ([alias (string-trim-all (substring str (+ (string-contains str "alias ") 6) (string-contains str "=")))]
-        [type (string-trim-all (substring str (+ (string-contains str "=") 1) (string-contains str ";")))])
+  (let ([alias (string-trim-all
+                (substring str (+ (string-contains str "alias ") 6) (string-contains str "=")))]
+        [type (string-trim-all
+               (substring str (+ (string-contains str "=") 1) (string-contains str ";")))])
     (set! str (substring str (+ (string-contains str ";") 1)))
     (string-replace-substring str alias type)))
 

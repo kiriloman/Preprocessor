@@ -6,8 +6,8 @@
 (define associations (make-hash))
 
 ;Adds a token with respective function to a hashmap for later use in process-string
-(define (add-active-token str function)
-  (hash-set! associations str function))
+(define (add-active-token token function)
+  (hash-set! associations token function))
 
 ;def-active-token macro
 (define-syntax-rule (def-active-token token str body)
